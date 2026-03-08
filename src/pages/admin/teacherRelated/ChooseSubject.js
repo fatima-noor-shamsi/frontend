@@ -20,31 +20,35 @@ const ChooseSubject = ({ situation }) => {
 
     useEffect(() => {
         if (situation === "Norm") {
-            setClassID(params.id);
-            const classID = params.id
+            const classID = params.id;
+            setClassID(classID);
             dispatch(getTeacherFreeClassSubjects(classID));
-        }
+        } 
         else if (situation === "Teacher") {
-            const { classID, teacherID } = params
+            const { classID, teacherID } = params;
             setClassID(classID);
             setTeacherID(teacherID);
             dispatch(getTeacherFreeClassSubjects(classID));
         }
-    }, [situation]);
+    }, [situation, params, dispatch]);   // ✅ dependencies fixed
 
     if (loading) {
         return <div>Loading...</div>;
-    } else if (response) {
-        return <div>
-            <h1>Sorry all subjects have teachers assigned already</h1>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                <PurpleButton variant="contained"
-                    onClick={() => navigate("/Admin/addsubject/" + classID)}>
-                    Add Subjects
-                </PurpleButton>
-            </Box>
-        </div>;
-    } else if (error) {
+    } 
+    else if (response) {
+        return (
+            <div>
+                <h1>Sorry all subjects have teachers assigned already</h1>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                    <PurpleButton variant="contained"
+                        onClick={() => navigate("/Admin/addsubject/" + classID)}>
+                        Add Subjects
+                    </PurpleButton>
+                </Box>
+            </div>
+        );
+    } 
+    else if (error) {
         console.log(error)
     }
 
@@ -59,48 +63,58 @@ const ChooseSubject = ({ situation }) => {
             <Typography variant="h6" gutterBottom component="div">
                 Choose a subject
             </Typography>
-            <>
-                <TableContainer>
-                    <Table aria-label="sclasses table">
-                        <TableHead>
-                            <StyledTableRow>
-                                <StyledTableCell></StyledTableCell>
-                                <StyledTableCell align="center">Subject Name</StyledTableCell>
-                                <StyledTableCell align="center">Subject Code</StyledTableCell>
-                                <StyledTableCell align="center">Actions</StyledTableCell>
+
+            <TableContainer>
+                <Table aria-label="sclasses table">
+                    <TableHead>
+                        <StyledTableRow>
+                            <StyledTableCell></StyledTableCell>
+                            <StyledTableCell align="center">Subject Name</StyledTableCell>
+                            <StyledTableCell align="center">Subject Code</StyledTableCell>
+                            <StyledTableCell align="center">Actions</StyledTableCell>
+                        </StyledTableRow>
+                    </TableHead>
+
+                    <TableBody>
+                        {Array.isArray(subjectsList) && subjectsList.length > 0 && subjectsList.map((subject, index) => (
+                            <StyledTableRow key={subject._id}>
+                                <StyledTableCell component="th" scope="row" style={{ color: "white" }}>
+                                    {index + 1}
+                                </StyledTableCell>
+
+                                <StyledTableCell align="center">
+                                    {subject.subName}
+                                </StyledTableCell>
+
+                                <StyledTableCell align="center">
+                                    {subject.subCode}
+                                </StyledTableCell>
+
+                                <StyledTableCell align="center">
+                                    {situation === "Norm" ? (
+                                        <GreenButton
+                                            variant="contained"
+                                            onClick={() => navigate("/Admin/teachers/addteacher/" + subject._id)}
+                                        >
+                                            Choose
+                                        </GreenButton>
+                                    ) : (
+                                        <GreenButton
+                                            variant="contained"
+                                            disabled={loader}
+                                            onClick={() => updateSubjectHandler(teacherID, subject._id)}
+                                        >
+                                            {loader ? <div className="load"></div> : "Choose Sub"}
+                                        </GreenButton>
+                                    )}
+                                </StyledTableCell>
                             </StyledTableRow>
-                        </TableHead>
-                        <TableBody>
-                            {Array.isArray(subjectsList) && subjectsList.length > 0 && subjectsList.map((subject, index) => (
-                                <StyledTableRow key={subject._id}>
-                                    <StyledTableCell component="th" scope="row" style={{ color: "white" }}>
-                                        {index + 1}
-                                    </StyledTableCell>
-                                    <StyledTableCell align="center">{subject.subName}</StyledTableCell>
-                                    <StyledTableCell align="center">{subject.subCode}</StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        {situation === "Norm" ?
-                                            <GreenButton variant="contained"
-                                                onClick={() => navigate("/Admin/teachers/addteacher/" + subject._id)}>
-                                                Choose
-                                            </GreenButton>
-                                            :
-                                            <GreenButton variant="contained" disabled={loader}
-                                                onClick={() => updateSubjectHandler(teacherID, subject._id)}>
-                                                {loader ? (
-                                                    <div className="load"></div>
-                                                ) : (
-                                                    'Choose Sub'
-                                                )}
-                                            </GreenButton>}
-                                    </StyledTableCell>
-                                </StyledTableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </>
-        </Paper >
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+        </Paper>
     );
 };
 

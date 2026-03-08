@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
-import { deleteUser } from '../../../redux/userRelated/userHandle';
+
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import {
     Paper, Box, IconButton,
@@ -48,7 +48,7 @@ const ShowSubjects = () => {
         { id: 'sclassName', label: 'Class', minWidth: 170 },
     ]
 
-    const subjectRows = subjectsList.map((subject) => {
+   const subjectRows = subjectsList?.map((subject)  => {
         return {
             subName: subject.subName,
             sessions: subject.sessions,
