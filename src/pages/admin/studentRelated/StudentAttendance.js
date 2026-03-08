@@ -31,25 +31,25 @@ const StudentAttendance = ({ situation }) => {
     const [message, setMessage] = useState("");
     const [loader, setLoader] = useState(false)
 
-    useEffect(() => {
-        if (situation === "Student") {
-            setStudentID(params.id);
-            const stdID = params.id
-            dispatch(getUserDetails(stdID, "Student"));
-        }
-        else if (situation === "Subject") {
-            const { studentID, subjectID } = params
-            setStudentID(studentID);
-            dispatch(getUserDetails(studentID, "Student"));
-            setChosenSubName(subjectID);
-        }
-    }, [situation]);
+  useEffect(() => {
+    if (situation === "Student") {
+        const stdID = params.id;
+        setStudentID(stdID);
+        dispatch(getUserDetails(stdID, "Student"));
+    }
+    else if (situation === "Subject") {
+        const { studentID, subjectID } = params;
+        setStudentID(studentID);
+        dispatch(getUserDetails(studentID, "Student"));
+        setChosenSubName(subjectID);
+    }
+}, [situation, params, dispatch]);
 
     useEffect(() => {
         if (userDetails && userDetails.sclassName && situation === "Student") {
             dispatch(getSubjectList(userDetails.sclassName._id, "ClassSubjects"));
         }
-    }, [dispatch, userDetails]);
+    }, [dispatch, userDetails,situation]);
 
     const changeHandler = (event) => {
         const selectedSubject = subjectsList.find(
